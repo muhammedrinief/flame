@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fire & Smoke Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        background: #f4f6f8;
+        color: #333;
+        transition: background 0.3s;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 500px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 40px 30px;
+        transition: all 0.3s;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+        font-weight: 500;
+        font-size: 1.8rem;
+        color: #444;
+        text-align: center;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 2rem;
+        padding: 15px 25px;
+        border-radius: 8px;
+        transition: background 0.3s, color 0.3s;
+        margin-bottom: 40px;
+    }
+
+    .status-circle {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .FLAME {
+        background-color: #fdecea;
+        color: #c82333;
+    }
+    .FLAME .status-circle { background-color: #c82333; }
+
+    .SMOKE {
+        background-color: #fff4e5;
+        color: #e07b39;
+    }
+    .SMOKE .status-circle { background-color: #e07b39; }
+
+    .NONE {
+        background-color: #e6f4ea;
+        color: #2e7d32;
+    }
+    .NONE .status-circle { background-color: #2e7d32; }
+
+    /* Group Members Table */
+    .group-section {
+        margin-top: 20px;
+    }
+    .group-section h2 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        text-align: center;
+        color: #555;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f0f0f0;
+    }
+
+    @media (max-width: 480px) {
+        .container { padding: 30px 20px; }
+        .status-indicator { font-size: 1.5rem; padding: 12px 20px; }
+        h1 { font-size: 1.5rem; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Fire & Smoke Detection</h1>
+
+    <div id="statusIndicator" class="status-indicator NONE">
+        <div class="status-circle"></div>
+        <div id="statusText">NONE</div>
+    </div>
+
+    <div class="group-section">
+        <h2>Group Members</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>A Nimra Tabassum</td>
+                    <td>24BCAR0108</td>
+                </tr>
+                <tr>
+                    <td>Muhammed Rinief</td>
+                    <td>24BCAR0369</td>
+                </tr>
+                <tr>
+                    <td>Pratham Chowdhury</td>
+                    <td>24BCAR0159</td>
+                </tr>
+                <tr>
+                    <td>Shaurya Chandgothia</td>
+                    <td>24BCAR0500</td>
+                </tr>
+                <tr>
+                    <td>Suraiya Fathima</td>
+                    <td>24BCAR0047</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+const statusIndicator = document.getElementById("statusIndicator");
+const statusText = document.getElementById("statusText");
+
+async function updateStatus() {
+    try {
+        const response = await fetch("/status");
+        const data = await response.json();
+        const status = data.status;
+
+        statusIndicator.className = "status-indicator " + status;
+        statusText.textContent = status;
+
+        // Optional: subtle background change
+        switch(status) {
+            case "FLAME":
+                document.body.style.background = "#fbeaea";
+                break;
+            case "SMOKE":
+                document.body.style.background = "#fff8f0";
+                break;
+            case "NONE":
+                document.body.style.background = "#f4f6f8";
+                break;
+        }
+
+    } catch (err) {
+        console.error("Error fetching status:", err);
+    }
+}
+
+setInterval(updateStatus, 1000);
+updateStatus();
+</script>
+</body>
+</html>
