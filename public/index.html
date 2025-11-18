@@ -1,186 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Fire & Smoke Monitor</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>IOT Agriculture Assistant</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
 <style>
-    body {
-        font-family: 'Roboto', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-        margin: 0;
-        padding: 20px;
-        background: #f4f6f8;
-        color: #333;
-        transition: background 0.3s;
-    }
+  :root{
+    --bg:#edf1f4;
+    --card-bg:#ffffff;
+    --safe-bg:#dff8e5;
+    --safe-color:#0e6120;
+    --warn-bg:#fff1c7;
+    --warn-color:#a77400;
+    --danger-bg:#ffd4d4;
+    --danger-color:#b30707;
+    --radius:12px;
+  }
 
-    .container {
-        width: 100%;
-        max-width: 500px;
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        padding: 40px 30px;
-        transition: all 0.3s;
-    }
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:"Roboto",sans-serif;
+    display:flex;
+    justify-content:center;
+    padding:15px;
+  }
 
-    h1 {
-        margin-bottom: 30px;
-        font-weight: 500;
-        font-size: 1.8rem;
-        color: #444;
-        text-align: center;
-    }
+  .wrap{
+    width:100%;
+    max-width:820px;   /* Perfect size for laptop screens */
+  }
 
-    .status-indicator {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 2rem;
-        padding: 15px 25px;
-        border-radius: 8px;
-        transition: background 0.3s, color 0.3s;
-        margin-bottom: 40px;
-    }
+  header{
+    text-align:center;
+    margin-bottom:10px;
+  }
 
-    .status-circle {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        margin-right: 10px;
-        flex-shrink: 0;
-    }
+  header h1{
+    margin:0;
+    color:#222;
+    font-size:1.6rem;
+    font-weight:600;
+  }
 
-    .FLAME {
-        background-color: #fdecea;
-        color: #c82333;
-    }
-    .FLAME .status-circle { background-color: #c82333; }
+  header p{
+    margin-top:2px;
+    color:#566;
+    font-size:0.9rem;
+  }
 
-    .SMOKE {
-        background-color: #fff4e5;
-        color: #e07b39;
-    }
-    .SMOKE .status-circle { background-color: #e07b39; }
+  /* GRID — 2x2 layout, compact tiles */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
 
-    .NONE {
-        background-color: #e6f4ea;
-        color: #2e7d32;
-    }
-    .NONE .status-circle { background-color: #2e7d32; }
+  .tile{
+    background:var(--card-bg);
+    border-radius:var(--radius);
+    padding:14px;
+    height:170px;            /* <<< FIX: compact size */
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transition:0.25s ease;
+  }
 
-    /* Group Members Table */
-    .group-section {
-        margin-top: 20px;
-    }
-    .group-section h2 {
-        font-size: 1.4rem;
-        margin-bottom: 15px;
-        text-align: center;
-        color: #555;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th, td {
-        padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-    th {
-        background-color: #f0f0f0;
-    }
+  .tile:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+  }
 
-    @media (max-width: 480px) {
-        .container { padding: 30px 20px; }
-        .status-indicator { font-size: 1.5rem; padding: 12px 20px; }
-        h1 { font-size: 1.5rem; }
+  .title{
+    font-size:1.05rem;
+    font-weight:600;
+    color:#1d2a35;
+    margin-bottom:6px;
+  }
+
+  .state{
+    font-size:1rem;
+    font-weight:700;
+    padding:8px 12px;
+    border-radius:10px;
+  }
+
+  .safe .state{
+    background:var(--safe-bg);
+    color:var(--safe-color);
+  }
+
+  .warn .state{
+    background:var(--warn-bg);
+    color:var(--warn-color);
+  }
+
+  .danger .state{
+    background:var(--danger-bg);
+    color:var(--danger-color);
+  }
+
+  .hint{
+    margin-top:6px;
+    font-size:0.8rem;
+    color:#666;
+  }
+
+  /* Mobile fallback */
+  @media(max-width:600px){
+    .grid{
+      grid-template-columns:1fr;
     }
+    .tile{
+      height:auto;
+      padding:18px;
+    }
+  }
 </style>
 </head>
+
 <body>
-<div class="container">
-    <h1>Fire & Smoke Detection</h1>
+<div class="wrap">
+  <header>
+    <h1>IOT Agriculture Assistant</h1>
+    <p>Water • Movement • Fire • Gas — Real-time Monitoring</p>
+  </header>
 
-    <div id="statusIndicator" class="status-indicator NONE">
-        <div class="status-circle"></div>
-        <div id="statusText">NONE</div>
+  <div class="grid">
+
+    <div id="waterTile" class="tile safe">
+      <div class="title">Water Level</div>
+      <div id="waterState" class="state">Loading…</div>
+      <div id="waterHint" class="hint">—</div>
     </div>
 
-    <div class="group-section">
-        <h2>Group Members</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>A Nimra Tabassum</td>
-                    <td>24BCAR0108</td>
-                </tr>
-                <tr>
-                    <td>Muhammed Rinief</td>
-                    <td>24BCAR0369</td>
-                </tr>
-                <tr>
-                    <td>Pratham Chowdhury</td>
-                    <td>24BCAR0159</td>
-                </tr>
-                <tr>
-                    <td>Shaurya Chandgothia</td>
-                    <td>24BCAR0500</td>
-                </tr>
-                <tr>
-                    <td>Suraiya Fathima</td>
-                    <td>24BCAR0047</td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="motionTile" class="tile safe">
+      <div class="title">Movement Detection</div>
+      <div id="motionState" class="state">Loading…</div>
+      <div id="motionHint" class="hint">—</div>
     </div>
+
+    <div id="fireTile" class="tile safe">
+      <div class="title">Fire Detection</div>
+      <div id="fireState" class="state">Loading…</div>
+      <div id="fireHint" class="hint">—</div>
+    </div>
+
+    <div id="gasTile" class="tile safe">
+      <div class="title">Gas Levels</div>
+      <div id="gasState" class="state">Loading…</div>
+      <div id="gasHint" class="hint">—</div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-const statusIndicator = document.getElementById("statusIndicator");
-const statusText = document.getElementById("statusText");
+const STATUS_URL="/status";
+const UPDATE_MS=1000;
 
-async function updateStatus() {
-    try {
-        const response = await fetch("/status");
-        const data = await response.json();
-        const status = data.status;
+function setTile(id,text,level){
+  const tile=document.getElementById(id);
+  tile.classList.remove("safe","warn","danger");
+  tile.classList.add(level);
+  tile.querySelector(".state").textContent=text;
 
-        statusIndicator.className = "status-indicator " + status;
-        statusText.textContent = status;
-
-        // Optional: subtle background change
-        switch(status) {
-            case "FLAME":
-                document.body.style.background = "#fbeaea";
-                break;
-            case "SMOKE":
-                document.body.style.background = "#fff8f0";
-                break;
-            case "NONE":
-                document.body.style.background = "#f4f6f8";
-                break;
-        }
-
-    } catch (err) {
-        console.error("Error fetching status:", err);
-    }
+  const hint=tile.querySelector(".hint");
+  hint.textContent =
+      level==="safe"  ? "Normal" :
+      level==="warn"  ? "Caution" :
+      "Immediate Action Required!";
 }
 
-setInterval(updateStatus, 1000);
-updateStatus();
+async function updateUI(){
+  try{
+    const r=await fetch(STATUS_URL);
+    const d=await r.json();
+
+    const flame=d.flame;
+    const gasD=d.gas_digital;
+    const gasA=d.gas_analog;
+    const pir=d.pir;
+    const waterD=d.water_digital;
+    const waterA=d.water_analog;
+
+    /* WATER — fixed logic */
+    let ws="", wl="";
+      if(waterA>950){ ws="No water detected"; wl="danger"; }
+      else if(waterA>750){ ws="Low water level"; wl="warn"; }
+      else if(waterA>450){ ws="Normal water level"; wl="safe"; }
+      else if(waterA>350){ ws="High water level"; wl="warn"; }
+      else{ ws="Very high water level"; wl="danger"; }
+    setTile("waterTile",ws,wl);
+
+    setTile("motionTile",
+      pir===1?"Movement detected!":"No movement",
+      pir===1?"danger":"safe"
+    );
+
+    setTile("fireTile",
+      flame===0?"Fire detected!":"No fire",
+      flame===0?"danger":"safe"
+    );
+
+    let gs="", gl="";
+    if(gasA>800) { gs="Very high emission levels!"; gl="danger"; }
+    else if(gasA>500){ gs="High gas levels"; gl="danger"; }
+    else if(gasA>200){ gs="Elevated gas levels"; gl="warn"; }
+    else{ gs="Air quality normal"; gl="safe"; }
+
+    setTile("gasTile",gs,gl);
+
+  }catch(e){
+    console.error(e);
+  }
+}
+
+updateUI();
+setInterval(updateUI,UPDATE_MS);
 </script>
+
 </body>
 </html>
